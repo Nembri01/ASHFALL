@@ -19,7 +19,14 @@ end
 
 target 'App' do
   capacitor_pods
-  # Add your Pods here
+
+  # @capacitor-community/admob 6.2.0 usa l'API vecchia del consenso Google
+  # (UMPConsentStatus). In GoogleUserMessagingPlatform 3.0 quei simboli sono
+  # stati rinominati e la compilazione fallisce con:
+  #   'UMPConsentStatus' has been renamed to 'ConsentStatus'
+  # Il plugin fissa Google-Mobile-Ads-SDK a 11.3.0, che pero' accetta UMP >= 2.0:
+  # senza questo vincolo CocoaPods tira giu' la 3.x e il build si rompe.
+  pod 'GoogleUserMessagingPlatform', '~> 2.0'
 end
 
 post_install do |installer|
