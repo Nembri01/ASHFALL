@@ -51,6 +51,22 @@ workflows:
           LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo 0)
           agvtool new-version -all $((LATEST + 1))
 
+      - name: Diagnostica credenziali Apple
+        # Apple risponde 401 alle API di firma: le credenziali arrivano ma
+        # vengono rifiutate. Stampo QUALI identificatori sta usando il runner
+        # (Key ID e Issuer ID sono identificatori pubblici, non segreti; della
+        # chiave privata stampo solo se c'e' e quanto e' lunga, mai il contenuto).
+        script: |
+          echo "Issuer ID : ${APP_STORE_CONNECT_ISSUER_ID:-(NON IMPOSTATO)}"
+          echo "Key ID    : ${APP_STORE_CONNECT_KEY_IDENTIFIER:-(NON IMPOSTATO)}"
+          if [ -n "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
+            echo "Chiave    : presente, ${#APP_STORE_CONNECT_PRIVATE_KEY} caratteri"
+            echo "$APP_STORE_CONNECT_PRIVATE_KEY" | head -1
+            echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tail -1
+          else
+            echo "Chiave    : (NON IMPOSTATA)"
+          fi
+
       - name: Firma automatica
         script: |
           keychain initialize
