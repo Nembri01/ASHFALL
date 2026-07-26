@@ -55,8 +55,16 @@
 	     Keep in sync with the iOS unit IDs in js/ads.js. -->
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-8282887482969580~4250478995</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Used to show ads that are relevant to you. You can play with non-personalised ads instead.</string>
+	<!-- NIENTE NSUserTrackingUsageDescription.
+	     La sua presenza dichiara ad Apple l'intenzione di chiedere il permesso di
+	     tracciamento (ATT), ma il codice non chiama mai requestTrackingAuthorization
+	     (non c'e' nessun plugin ATT installato) e l'etichetta privacy dichiara
+	     "nessun monitoraggio". Con la chiave presente App Store Connect rifiuta
+	     l'invio: "la tua app contiene NSUserTrackingUsageDescription... aggiorna la
+	     risposta sulla privacy oppure carica una nuova build".
+	     Se un giorno si vorranno annunci personalizzati: reinserire questa chiave,
+	     aggiungere un plugin ATT, chiamare l'autorizzazione E aggiornare l'etichetta
+	     privacy a "usato per monitoraggio". Le tre cose vanno insieme. -->
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
