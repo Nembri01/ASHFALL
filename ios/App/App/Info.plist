@@ -65,6 +65,12 @@
 	     Se un giorno si vorranno annunci personalizzati: reinserire questa chiave,
 	     aggiungere un plugin ATT, chiamare l'autorizzazione E aggiornare l'etichetta
 	     privacy a "usato per monitoraggio". Le tre cose vanno insieme. -->
+	<!-- Il gioco non implementa crittografia propria: usa solo HTTPS di sistema
+	     (annunci AdMob), che rientra nell'esenzione. Senza questa chiave App Store
+	     Connect blocca OGNI build con "Conformità mancante" finche' non si risponde
+	     a mano al questionario sull'esportazione. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
