@@ -54,7 +54,21 @@ workflows:
       - name: Firma automatica
         script: |
           keychain initialize
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          # Serve una chiave privata RSA: il certificato di distribuzione e' la
+          # meta' pubblica di una coppia di chiavi. Senza, fetch-signing-files
+          # scarica il certificato ma non puo' salvarlo ("Cannot save Signing
+          # Certificates without certificate private key") e l'archive fallisce
+          # con "App requires a provisioning profile".
+          # NB: una chiave nuova a ogni build = un certificato nuovo su Apple,
+          # e il limite e' 3. Dopo la prima build riuscita conviene salvare
+          # questa chiave come variabile sicura CERTIFICATE_PRIVATE_KEY e usare
+          # --certificate-key=@env:CERTIFICATE_PRIVATE_KEY per riusare sempre
+          # lo stesso certificato.
+          ssh-keygen -t rsa -b 2048 -m PEM -f /tmp/cert_key -q -N ""
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --certificate-key=@file:/tmp/cert_key \
+            --create
           keychain add-certificates
           xcode-project use-profiles
 
