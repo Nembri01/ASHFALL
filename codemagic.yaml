@@ -75,15 +75,16 @@ workflows:
           # scarica il certificato ma non puo' salvarlo ("Cannot save Signing
           # Certificates without certificate private key") e l'archive fallisce
           # con "App requires a provisioning profile".
-          # NB: una chiave nuova a ogni build = un certificato nuovo su Apple,
-          # e il limite e' 3. Dopo la prima build riuscita conviene salvare
-          # questa chiave come variabile sicura CERTIFICATE_PRIVATE_KEY e usare
-          # --certificate-key=@env:CERTIFICATE_PRIVATE_KEY per riusare sempre
-          # lo stesso certificato.
-          ssh-keygen -t rsa -b 2048 -m PEM -f /tmp/cert_key -q -N ""
+          # La chiave e' FISSA, salvata come variabile sicura CERTIFICATE_PRIVATE_KEY
+          # (originale in C:\Progetti\keystore\cert_key_ios).
+          # Generarne una nuova a ogni build non funziona: il certificato esistente
+          # non corrisponde alla chiave nuova, il tool prova a crearne un altro e
+          # Apple risponde 409 "You already have a current Distribution certificate",
+          # perche' ne ammette UNO solo. Con la chiave fissa il certificato viene
+          # riusato per sempre.
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
-            --certificate-key=@file:/tmp/cert_key \
+            --certificate-key=@env:CERTIFICATE_PRIVATE_KEY \
             --create
           keychain add-certificates
           xcode-project use-profiles
