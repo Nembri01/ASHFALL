@@ -1,0 +1,70 @@
+# Build iOS di ASHFALL su runner macOS in cloud.
+# Serve perche' l'IPA non si puo' compilare su Windows: Xcode gira solo su macOS.
+#
+# Prima del primo build, su codemagic.io:
+#   1. collega questo repository
+#   2. Teams > Integrations > App Store Connect: aggiungi una chiave API
+#      (App Store Connect > Users and Access > Integrations > App Store Connect API,
+#       ruolo "App Manager") e chiamala esattamente  ashfall_asc_key
+#   3. Environment variables, gruppo "appstore":  APP_STORE_APP_ID = <ID numerico
+#      dell'app in App Store Connect>
+workflows:
+  ios-testflight:
+    name: ASHFALL iOS - TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    integrations:
+      app_store_connect: ashfall_asc_key
+
+    environment:
+      groups:
+        - appstore
+      vars:
+        BUNDLE_ID: "com.ashfall.game"
+        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        XCODE_SCHEME: "App"
+      node: 20
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: Dipendenze npm
+        script: npm ci || npm install
+
+      - name: Costruisci www/ e sincronizza Capacitor
+        script: npm run cap:sync
+
+      - name: pod install
+        script: |
+          cd ios/App
+          pod install
+
+      - name: Numero build progressivo
+        # Apple rifiuta due caricamenti con lo stesso build number.
+        script: |
+          cd ios/App
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo 0)
+          agvtool new-version -all $((LATEST + 1))
+
+      - name: Firma automatica
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          keychain add-certificates
+          xcode-project use-profiles
+
+      - name: Compila IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

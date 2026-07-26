@@ -1,0 +1,16 @@
+{
+  "name": "ASHFALL — Wasteland Survival",
+  "short_name": "ASHFALL",
+  "description": "Sparatutto post-apocalittico a ondate con difficoltà crescente.",
+  "lang": "it",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    { "src": "assets/icon-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

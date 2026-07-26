@@ -1,0 +1,46 @@
+# ---- SEGRETI: mai nel repository ----
+# Il keystore vero vive fuori dal progetto (C:\Progetti\keystore\), ma questo file
+# contiene le sue password in chiaro. Se finisce su GitHub, chiunque puo' firmare
+# aggiornamenti a nome tuo e Google non permette di cambiare chiave a cose fatte.
+android/keystore.properties
+keystore/
+android/keystore/
+CREDENZIALI-KEYSTORE.txt
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+*.cer
+*.certSigningRequest
+AuthKey_*.p8
+
+# ---- dipendenze ----
+node_modules/
+
+# ---- output di build (rigenerabili) ----
+www/
+android/build/
+android/app/build/
+android/capacitor-cordova-android-plugins/build/
+android/.gradle/
+android/local.properties
+android/app/release/
+android/app/debug/
+*.aab
+*.apk
+*.ipa
+ios/App/Pods/
+ios/App/build/
+ios/App/output/
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# ---- materiale store (grosso, si rigenera con shots.js) ----
+store-upload/
+store-upload-ios/
+
+# ---- sistema ----
+.DS_Store
+Thumbs.db
+*.log

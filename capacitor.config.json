@@ -1,0 +1,18 @@
+{
+  "appId": "com.ashfall.game",
+  "appName": "ASHFALL",
+  "webDir": "www",
+  "backgroundColor": "#0a0a0c",
+  "android": { "backgroundColor": "#0a0a0c" },
+  "ios": { "backgroundColor": "#0a0a0c", "contentInset": "always" },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 800,
+      "backgroundColor": "#0a0a0c",
+      "showSpinner": false
+    },
+    "AdMob": {
+      "appId": "ca-app-pub-8282887482969580~2335827751"
+    }
+  }
+}

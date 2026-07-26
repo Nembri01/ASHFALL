@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#0a0a0c" />
+<title>ASHFALL — Wasteland Survival</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/icon-1024.png" />
+<link rel="stylesheet" href="styles.css" />
+<script>
+/* Crash guard: an uncaught runtime error must never leave a silent frozen screen.
+   Installed before every game script so it also catches load-time errors.
+   unhandledrejection is LOG-ONLY: ad/IAP promises may reject in normal flow. */
+(function(){
+  var shown=false;
+  function logErr(m){
+    try{
+      var log=JSON.parse(localStorage.getItem('ashfall_errlog')||'[]');
+      log.unshift({t:new Date().toISOString(),m:String(m||'').slice(0,300)});
+      if(log.length>5) log.length=5;
+      localStorage.setItem('ashfall_errlog',JSON.stringify(log));
+    }catch(e){}
+  }
+  window.addEventListener('error',function(ev){
+    logErr((ev.message||'')+' @'+(ev.filename||'')+':'+(ev.lineno||0));
+    if(shown) return; shown=true;
+    try{ if(window.SaveData&&SaveData.saveNow) SaveData.saveNow(); }catch(e){}
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(5,6,10,.96);color:#e8ecf2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:system-ui,sans-serif;text-align:center;padding:24px;';
+    d.innerHTML='<div style="font-size:44px">⚠️</div>'
+      +'<div style="font-size:19px;font-weight:800;letter-spacing:1px">OPS! QUALCOSA SI È ROTTO</div>'
+      +'<div style="font-size:13px;opacity:.75;max-width:340px;line-height:1.5">Errore imprevisto. I tuoi progressi sono al sicuro.<br><span style="opacity:.7">Unexpected error. Your progress is safe.</span></div>'
+      +'<button id="crashReload" style="margin-top:6px;padding:14px 38px;border:0;border-radius:12px;font-weight:800;font-size:16px;letter-spacing:1px;background:linear-gradient(180deg,#ffce85,#e0891a);color:#1b1206;cursor:pointer">RIAVVIA · RESTART</button>'
+      +'<div style="font-size:10px;opacity:.4;max-width:340px;word-break:break-all">'+String(ev.message||'').replace(/[<>&]/g,'').slice(0,160)+'</div>';
+    (document.body||document.documentElement).appendChild(d);
+    var b=d.querySelector('#crashReload'); if(b) b.addEventListener('click',function(){ location.reload(); });
+  });
+  window.addEventListener('unhandledrejection',function(ev){
+    logErr('promise: '+String(ev.reason&&ev.reason.message||ev.reason||''));
+  });
+})();
+</script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- ===== IN-GAME HUD ===== -->
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="hud-left">
+        <div class="hp-wrap">
+          <div class="hp-bar"><div id="hpFill" class="hp-fill"></div></div>
+          <div class="hp-text"><span id="hpText">100</span><small>HP</small></div>
+        </div>
+        <div id="dashMeter" class="dash-meter"><div id="dashFill" class="dash-fill"></div><span>DASH</span></div>
+      </div>
+      <div class="hud-center">
+        <div class="lvl-label" data-i18n="sector">SETTORE</div>
+        <div id="lvlNum" class="lvl-num">1</div>
+        <div class="wave-bar"><div id="waveFill" class="wave-fill"></div></div>
+        <div id="sectorInfo" class="sector-info"></div>
+      </div>
+      <div class="hud-right">
+        <div id="score" class="score">0</div>
+        <div id="runScrap" class="run-scrap"><span class="hex">⬢</span> <b>0</b></div>
+        <div id="combo" class="combo hidden">x1</div>
+        <button id="pauseBtn" class="pause-btn" aria-label="Pausa">⏸</button>
+      </div>
+    </div>
+
+    <div id="objList" class="obj-list"></div>
+
+    <div id="bossBar" class="boss-bar hidden">
+      <div class="boss-name" id="bossName">BOSS</div>
+      <div class="boss-hp"><div id="bossHpFill"></div></div>
+    </div>
+
+    <div id="weaponChip" class="weapon-chip"><span id="weaponIco">🔫</span><span id="weaponName">Vagabonda</span></div>
+    <div id="relicHud" class="relic-hud hidden"></div>
+
+    <div class="action-cluster">
+      <div id="abilityName" class="ability-name">Sentinella</div>
+      <button id="abilityBtn" class="ability-btn ready" aria-label="Abilità">
+        <span id="abilityIco">🛰️</span>
+        <svg class="ab-ring" viewBox="0 0 40 40"><circle id="abRing" cx="20" cy="20" r="17"></circle></svg>
+      </button>
+      <button id="dashBtn" class="dash-btn" aria-label="Scatto">⤢</button>
+    </div>
+
+    <div id="bannerWrap" class="banner-wrap"></div>
+    <div id="tutorial" class="tutorial hidden">
+      <b data-i18n="howTo">COME SI GIOCA</b>
+      <span data-i18n="tut1">Trascina ovunque per muoverti · miri e spari da solo</span>
+      <span data-i18n="tut2">⤢ Scatto per schivare (invulnerabile) · 🛰️ abilità a fianco</span>
+      <span data-i18n="tut3">5 settori = 1 ZONA, l’ultimo è il BOSS · ogni zona cambia</span>
+      <span data-i18n="tut4">Evita le pozze colorate (fanno male) · raccogli ⬢ e ❤️</span>
+    </div>
+  </div>
+
+  <!-- ===== TITLE SCREEN ===== -->
+  <div id="titleScreen" class="screen">
+    <div class="scrap-badge"><span class="hex">⬢</span> <span id="scrapTotal">0</span> <small data-i18n="scrap">ROTTAMI</small></div>
+    <div class="scrap-badge cores-badge"><span class="hex core">⬡</span> <span id="coresTotal">0</span> <small data-i18n="cores">NUCLEI</small></div>
+    <div class="logo-block">
+      <h1 class="logo">ASH<span>FALL</span></h1>
+      <p class="tagline">WASTELAND&nbsp;SURVIVAL</p>
+    </div>
+    <button id="dailyPill" class="daily-pill hidden" data-i18n="dailyReward">🎁 RICOMPENSA GIORNALIERA</button>
+    <div class="title-actions">
+      <button id="playBtn" class="btn btn-primary play-cta" data-i18n="playBtn">GIOCA</button>
+      <div id="hubTiles" class="hub-tiles"><!-- buildHubTiles() --></div>
+      <button id="adBonusBtn" class="btn btn-ghost hidden" data-i18n="bonusScrap">▶ +ROTTAMI</button>
+    </div>
+    <div class="title-stats">
+      <div><span data-i18n="record">RECORD</span><br><b id="bestScore">0</b></div>
+      <div><span data-i18n="maxSector">SETTORE MAX</span><br><b id="bestLevel">0</b></div>
+    </div>
+    <div id="nextGoal" class="next-goal hidden"></div>
+    <div class="title-foot">
+      <p class="hint" data-i18n="hint">Trascina per muoverti · mira e fuoco automatici · scatto e abilità per sopravvivere</p>
+    </div>
+  </div>
+
+  <!-- ===== PLAY SETUP (mode + threat) ===== -->
+  <div id="playSetupScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="prepRaid">PREPARA LA SORTITA</h2>
+    <p class="screen-sub" data-i18n="setupSub">SOPRAVVISSUTO · MODALITÀ · MINACCIA</p>
+    <div class="ps-wrap">
+      <div id="playSummary" class="ps-card"><!-- renderPlaySummary() --></div>
+      <div id="playModeMount" class="ps-mount">
+        <div class="setup-section-h" data-i18n="modes">MODALITÀ</div>
+        <div id="setupModes" class="shop-grid"></div>
+        <div class="setup-section-h" data-i18n="threatL">MINACCIA</div>
+        <div id="threatBox" class="threat-box">
+          <div class="threat-stepper">
+            <button id="threatDec" class="btn-ghost threat-step">−</button>
+            <div class="threat-mid">
+              <div class="threat-num"><span id="threatVal">0</span></div>
+              <div class="threat-tname" id="threatName">Standard</div>
+              <div class="threat-rec" id="threatRec">nessun record</div>
+            </div>
+            <button id="threatInc" class="btn-ghost threat-step">+</button>
+          </div>
+          <div class="threat-mods" id="threatMods"></div>
+          <div class="threat-reward" id="threatReward"></div>
+          <div class="threat-next" id="threatNextHint"></div>
+        </div>
+      </div>
+    </div>
+    <button id="playStartBtn" class="btn btn-primary play-cta" data-i18n="start2">INIZIA ▸</button>
+    <button id="playBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== SHOP SCREEN ===== -->
+  <div id="shopScreen" class="screen hidden">
+    <h2 class="screen-title"><span data-i18n="shop">NEGOZIO</span> <span id="prestigeTag" class="prestige-tag"></span></h2>
+    <div class="shop-balance"><span class="hex">⬢</span> <b id="shopScrap">0</b> <span data-i18n="scrap">ROTTAMI</span></div>
+    <div class="shop-scroll">
+      <h3 class="shop-sec" data-i18n="arsenal">ARSENALE</h3>
+      <div id="weaponGrid" class="shop-grid"></div>
+      <h3 class="shop-sec" data-i18n="abilities">ABILITÀ</h3>
+      <div id="abilityGrid" class="shop-grid"></div>
+      <h3 class="shop-sec" data-i18n="permUpgrades">POTENZIAMENTI PERMANENTI</h3>
+      <div id="shopGrid" class="shop-grid"></div>
+      <button id="ascendBtn" class="btn btn-primary ascend-btn hidden">⭐ ASCENDI</button>
+      <div id="ascendInfo" class="ascend-info hidden"></div>
+      <h3 class="shop-sec" data-i18n="getScrap">💳 OTTIENI ROTTAMI</h3>
+      <div id="scrapPacks" class="shop-grid"></div>
+    </div>
+    <button id="shopBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== CHALLENGES SCREEN ===== -->
+  <div id="challengesScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="challengesT">SFIDE</h2>
+    <p class="screen-sub" data-i18n="challengesSub">OBIETTIVI A LUNGO TERMINE</p>
+    <div class="shop-scroll"><div id="challengeGrid" class="shop-grid"></div></div>
+    <button id="challBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== CHARACTERS SCREEN ===== -->
+  <div id="charScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="survivors">SOPRAVVISSUTI</h2>
+    <p class="screen-sub"><span data-i18n="activeLbl">ATTIVO:</span> <b id="charActive">VAGABONDO</b></p>
+    <div class="shop-scroll"><div id="charGrid" class="shop-grid"></div></div>
+    <button id="charBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== PROGRESSI (sub-hub) ===== -->
+  <div id="progressScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="progressT">PROGRESSI</h2>
+    <p class="screen-sub" data-i18n="progressSub">SFIDE · ACHIEVEMENT · CODEX</p>
+    <div class="shop-scroll"><div id="progressGrid" class="shop-grid"></div></div>
+    <button id="progressBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== MERCATO NERO (Nuclei shop) ===== -->
+  <div id="marketScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="market">MERCATO NERO</h2>
+    <p class="screen-sub" data-i18n="marketSub">PERK PERMANENTI · CIMELI</p>
+    <div class="shop-balance"><span class="hex core">⬡</span> <b id="marketCores">0</b> <span data-i18n="cores">NUCLEI</span></div>
+    <div class="shop-scroll"><div id="marketGrid" class="shop-grid"></div>
+      <h3 class="shop-sec" data-i18n="getCores">💳 OTTIENI NUCLEI</h3>
+      <div id="corePacks" class="shop-grid"></div></div>
+    <button id="marketBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== STATISTICHE / RECORD PERSONALE ===== -->
+  <div id="statsScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="statsT">RECORD PERSONALE</h2>
+    <p class="screen-sub" data-i18n="statsSub">STATISTICHE · STORICO RUN</p>
+    <div class="shop-scroll"><div id="statsBody"></div></div>
+    <button id="statsBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== ACHIEVEMENTS (IMPRESE) SCREEN ===== -->
+  <div id="achScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="achT">IMPRESE</h2>
+    <p class="screen-sub"><span data-i18n="unlockedLbl">SBLOCCATE</span> <b id="achProgLbl">0/0</b> · <span class="hex core">⬡</span> <b id="achCores">0</b> <span data-i18n="cores">NUCLEI</span></p>
+    <div class="shop-scroll"><div id="achGrid" class="shop-grid"></div></div>
+    <button id="achBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== CODEX / BESTIARIO SCREEN ===== -->
+  <div id="codexScreen" class="screen hidden">
+    <h2 class="screen-title">CODEX</h2>
+    <p class="screen-sub"><span data-i18n="discoveredLbl">SCOPERTE</span> <b id="codexProgLbl">0/0</b></p>
+    <div class="shop-scroll"><div id="codexGrid"></div></div>
+    <button id="codexBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== ASPETTO / COSMETICI SCREEN ===== -->
+  <div id="cosmeticsScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="aspect">ASPETTO</h2>
+    <p class="screen-sub"><span class="hex core">⬡</span> <b id="cosmCores">0</b> <span data-i18n="cores">NUCLEI</span> · <span data-i18n="customizeSurv">personalizza il sopravvissuto</span></p>
+    <div id="cosmeticsTabs" class="seg" role="tablist"></div>
+    <div class="shop-scroll"><div id="cosmeticsGrid" class="shop-grid"></div></div>
+    <button id="cosmeticsBack" class="btn btn-ghost" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== DAILY REWARD MODAL ===== -->
+  <div id="dailyModal" class="screen hidden">
+    <h2 class="screen-title" data-i18n="dailyT">RICOMPENSA GIORNALIERA</h2>
+    <p class="screen-sub" data-i18n="dailySub">TORNA OGNI GIORNO PER BONUS CRESCENTI</p>
+    <div id="dailyGrid" class="shop-grid daily-grid"></div>
+    <button id="dailyClaimBtn" class="btn btn-primary" data-i18n="claim">RISCUOTI</button>
+    <button id="dailyClose" class="btn btn-ghost" data-i18n="close">← CHIUDI</button>
+  </div>
+
+  <!-- ===== UPGRADE SCREEN ===== -->
+  <div id="upgradeScreen" class="screen hidden">
+    <h2 class="screen-title"><span data-i18n="sector">SETTORE</span> <span id="upLvl">1</span> <span data-i18n="clearedLbl">RIPULITO</span></h2>
+    <p class="screen-sub" data-i18n="chooseUpgrade">SCEGLI UN POTENZIAMENTO</p>
+    <div id="upgradeCards" class="upgrade-cards"></div>
+    <button id="adRerollBtn" class="btn btn-ghost" data-i18n="rerollUp">▶ RI-TIRA POTENZIAMENTI</button>
+    <button id="coreRerollBtn" class="btn btn-ghost hidden">⬡ RI-TIRA (1)</button>
+  </div>
+
+  <!-- ===== RELIC SCREEN ===== -->
+  <div id="relicScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="relicT">RELIQUIA</h2>
+    <p class="screen-sub" data-i18n="relicSub">SCEGLI UN ARTEFATTO</p>
+    <div id="relicCards" class="upgrade-cards"></div>
+  </div>
+
+  <!-- ===== EVENT SCREEN ===== -->
+  <div id="eventScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="crossroads">BIVIO</h2>
+    <div id="eventCard" class="event-card"></div>
+    <div class="event-actions">
+      <button id="evTake" class="btn btn-primary" data-i18n="choose">SCEGLI</button>
+      <button id="evSkip" class="btn btn-ghost" data-i18n="skip">SALTA</button>
+    </div>
+  </div>
+
+  <!-- ===== PAUSE SCREEN ===== -->
+  <div id="pauseScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="paused">IN PAUSA</h2>
+    <div id="pauseBuild" class="pause-build set-group hidden"></div>
+    <button id="resumeBtn" class="btn btn-primary" data-i18n="resume">RIPRENDI</button>
+    <button id="restartBtn" class="btn btn-ghost" data-i18n="restart">RICOMINCIA</button>
+    <button id="helpBtn" class="btn btn-ghost">❔ <span data-i18n="howToPlay">COME SI GIOCA</span></button>
+    <button id="quitBtn" class="btn btn-ghost" data-i18n="quitRun">🚪 ESCI AL MENU</button>
+    <button id="openSettings2" class="btn-ghost">⚙ <span data-i18n="settings">IMPOSTAZIONI</span></button>
+  </div>
+
+  <!-- ===== SETTINGS SCREEN ===== -->
+  <div id="settingsScreen" class="screen hidden">
+    <h2 class="screen-title" data-i18n="settings">IMPOSTAZIONI</h2>
+    <div class="settings-list">
+      <div class="set-group"><div class="set-h" data-i18n="audio">AUDIO</div>
+        <label class="set-row"><span data-i18n="music">Musica</span>
+          <input id="setMusicVol" type="range" min="0" max="100" step="1"><b id="setMusicVal">60</b></label>
+        <label class="set-row"><span data-i18n="sfx">Effetti</span>
+          <input id="setSfxVol" type="range" min="0" max="100" step="1"><b id="setSfxVal">70</b></label>
+      </div>
+      <div class="set-group"><div class="set-h" data-i18n="game">GIOCO</div>
+        <label class="set-row"><span data-i18n="vibration">Vibrazione</span>
+          <button id="setHaptics" class="sw" role="switch" aria-checked="true"></button></label>
+        <label class="set-row"><span data-i18n="screenShake">Tremolio schermo</span>
+          <button id="setShake" class="sw" role="switch" aria-checked="true"></button></label>
+        <label class="set-row"><span data-i18n="performance">Prestazioni</span>
+          <button id="setPerf" class="sw" role="switch" aria-checked="false"></button></label>
+        <div class="set-note" data-i18n="aimHint">Mira e fuoco sempre automatici</div>
+      </div>
+      <div class="set-group"><div class="set-h" data-i18n="data">DATI</div>
+        <button id="setRemoveAds" class="btn btn-ghost" data-i18n="removeAds">🚫 Rimuovi pubblicità</button>
+        <button id="setRestore" class="btn btn-ghost" data-i18n="restorePurch">Ripristina acquisti</button>
+        <button id="setAdsPrivacy" class="btn btn-ghost" data-i18n="adsPrivacy">Privacy annunci</button>
+        <button id="setWipe" class="btn btn-ghost danger-btn" data-i18n="wipe">Azzera progressi</button>
+      </div>
+      <div class="set-group"><div class="set-h" data-i18n="language">Lingua</div>
+        <div class="seg seg-lang" style="margin:4px auto 0;">
+          <button class="seg-b on" data-lang="it">ITALIANO</button>
+          <button class="seg-b" data-lang="en">ENGLISH</button>
+        </div>
+      </div>
+      <div class="set-group"><div class="set-h" data-i18n="info">INFO</div>
+        <button id="setPrivacy" class="btn btn-ghost" data-i18n="privacy">Privacy Policy</button>
+        <button id="setCredits" class="btn btn-ghost" data-i18n="credits">Crediti</button>
+        <div id="setCreditsBox" class="credits-box hidden">ASHFALL — Wasteland Survival<br>Motore Canvas 2D · Audio sintetizzato (WebAudio)<br>Grafica procedurale · Font di sistema</div>
+        <div class="version-row" id="setVersion">ASHFALL v1.0.0 (build 1)</div>
+      </div>
+    </div>
+    <button id="setBack" class="btn btn-primary" data-i18n="back">← INDIETRO</button>
+  </div>
+
+  <!-- ===== CONFIRM WIPE MODAL ===== -->
+  <div id="confirmWipe" class="screen modal hidden">
+    <div class="modal-card">
+      <p class="modal-msg" data-i18n="wipeConfirm">Cancellerai rottami, record e potenziamenti. Sicuro?</p>
+      <div class="modal-actions">
+        <button id="wipeCancel" class="btn btn-ghost" data-i18n="cancel">ANNULLA</button>
+        <button id="wipeYes" class="btn btn-primary danger-btn" data-i18n="wipeYes">CANCELLA TUTTO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GAME OVER SCREEN ===== -->
+  <div id="gameoverScreen" class="screen hidden">
+    <h2 class="screen-title danger" data-i18n="youFell">SEI CADUTO</h2>
+    <div id="goCause" class="go-cause"></div>
+    <div id="goBuild" class="go-build"></div>
+    <div class="go-stats">
+      <div><span data-i18n="sectorReached">SETTORE RAGGIUNTO</span><br><b id="goLevel">1</b></div>
+      <div><span data-i18n="score2">PUNTEGGIO</span><br><b id="goScore">0</b></div>
+      <div><span data-i18n="kills2">ELIMINAZIONI</span><br><b id="goKills">0</b></div>
+      <div><span data-i18n="time2">TEMPO</span><br><b id="goTime">0:00</b></div>
+      <div><span data-i18n="cores">NUCLEI</span><br><b id="goCores">0</b></div>
+    </div>
+    <div id="newRecord" class="new-record hidden" data-i18n="newRecord">★ NUOVO RECORD ★</div>
+    <div id="goDailyBest" class="go-dailybest hidden"></div>
+    <div class="go-scrap"><span class="hex">⬢</span> +<b id="goScrap">0</b> <span data-i18n="scrap">ROTTAMI</span></div>
+    <button id="adReviveBtn" class="btn btn-primary" data-i18n="watchReviveAd">▶ GUARDA ANNUNCIO — RINASCI</button>
+    <button id="adDoubleBtn" class="btn btn-ghost" data-i18n="doubleScrap">▶ RADDOPPIA ROTTAMI</button>
+    <button id="retryBtn" class="btn btn-primary" data-i18n="retry">RIPROVA</button>
+    <button id="menuBtn" class="btn btn-ghost" data-i18n="menu">MENU</button>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="js/core.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/ads.js"></script>
+  <script src="js/iap.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

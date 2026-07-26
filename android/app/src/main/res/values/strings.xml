@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ASHFALL</string>
+    <string name="title_activity_main">ASHFALL</string>
+    <string name="package_name">com.ashfall.game</string>
+    <string name="custom_url_scheme">com.ashfall.game</string>
+</resources>

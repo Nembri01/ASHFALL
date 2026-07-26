@@ -1,0 +1,247 @@
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=C:/Progetti/AndroidTools/tmp
+Downloading https://services.gradle.org/distributions/gradle-8.9-all.zip
+.....................10%......................20%.....................30%......................40%.....................50%......................60%.....................70%......................80%.....................90%......................100%
+
+Welcome to Gradle 8.9!
+
+Here are the highlights of this release:
+ - Enhanced Error and Warning Messages
+ - IDE Integration Improvements
+ - Daemon JVM Information
+
+For more details see https://docs.gradle.org/8.9/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Configure project :capacitor-cordova-android-plugins
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:generateReleaseResValues
+> Task :capacitor-android:preBuild UP-TO-DATE
+> Task :capacitor-android:preReleaseBuild UP-TO-DATE
+> Task :capacitor-android:generateReleaseResValues
+> Task :capacitor-android:generateReleaseResources
+> Task :capacitor-android:packageReleaseResources
+> Task :capacitor-browser:preBuild UP-TO-DATE
+> Task :capacitor-browser:preReleaseBuild UP-TO-DATE
+> Task :capacitor-browser:generateReleaseResValues
+> Task :capacitor-browser:generateReleaseResources
+> Task :capacitor-browser:packageReleaseResources
+> Task :capacitor-community-admob:preBuild UP-TO-DATE
+> Task :capacitor-community-admob:preReleaseBuild UP-TO-DATE
+> Task :capacitor-community-admob:generateReleaseResValues
+> Task :capacitor-community-admob:generateReleaseResources
+> Task :capacitor-community-admob:packageReleaseResources
+> Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preReleaseBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:generateReleaseResValues
+> Task :capacitor-cordova-android-plugins:generateReleaseResources
+> Task :capacitor-cordova-android-plugins:packageReleaseResources
+> Task :capacitor-haptics:preBuild UP-TO-DATE
+> Task :capacitor-haptics:preReleaseBuild UP-TO-DATE
+> Task :capacitor-haptics:generateReleaseResValues
+> Task :capacitor-haptics:generateReleaseResources
+> Task :capacitor-haptics:packageReleaseResources
+> Task :capacitor-splash-screen:preBuild UP-TO-DATE
+> Task :capacitor-splash-screen:preReleaseBuild UP-TO-DATE
+> Task :capacitor-splash-screen:generateReleaseResValues
+> Task :capacitor-splash-screen:generateReleaseResources
+> Task :capacitor-splash-screen:packageReleaseResources
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :capacitor-android:extractDeepLinksRelease
+> Task :capacitor-browser:extractDeepLinksRelease
+> Task :capacitor-community-admob:extractDeepLinksRelease
+> Task :capacitor-cordova-android-plugins:extractDeepLinksRelease
+> Task :capacitor-haptics:extractDeepLinksRelease
+> Task :capacitor-splash-screen:extractDeepLinksRelease
+> Task :capacitor-community-admob:processReleaseManifest
+> Task :capacitor-cordova-android-plugins:processReleaseManifest
+> Task :capacitor-android:processReleaseManifest
+> Task :capacitor-browser:processReleaseManifest
+> Task :capacitor-haptics:processReleaseManifest
+> Task :capacitor-haptics:writeReleaseAarMetadata
+> Task :capacitor-community-admob:writeReleaseAarMetadata
+> Task :capacitor-android:writeReleaseAarMetadata
+> Task :capacitor-browser:writeReleaseAarMetadata
+> Task :capacitor-splash-screen:writeReleaseAarMetadata
+> Task :capacitor-cordova-android-plugins:writeReleaseAarMetadata
+> Task :capacitor-splash-screen:processReleaseManifest
+> Task :app:packageReleaseResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processApplicationManifestReleaseForBundle
+> Task :app:checkReleaseAarMetadata
+> Task :app:processReleaseManifestForPackage
+> Task :capacitor-browser:compileReleaseLibraryResources
+> Task :capacitor-android:compileReleaseLibraryResources
+> Task :capacitor-browser:parseReleaseLocalResources
+> Task :capacitor-android:parseReleaseLocalResources
+> Task :app:parseReleaseLocalResources
+> Task :capacitor-community-admob:compileReleaseLibraryResources
+> Task :capacitor-cordova-android-plugins:compileReleaseLibraryResources
+> Task :capacitor-community-admob:parseReleaseLocalResources
+> Task :capacitor-cordova-android-plugins:parseReleaseLocalResources
+> Task :capacitor-haptics:compileReleaseLibraryResources
+> Task :capacitor-haptics:parseReleaseLocalResources
+> Task :capacitor-splash-screen:compileReleaseLibraryResources
+> Task :capacitor-browser:generateReleaseRFile
+> Task :capacitor-community-admob:generateReleaseRFile
+> Task :capacitor-cordova-android-plugins:generateReleaseRFile
+> Task :capacitor-haptics:generateReleaseRFile
+> Task :capacitor-splash-screen:parseReleaseLocalResources
+> Task :capacitor-android:generateReleaseRFile
+> Task :app:extractReleaseVersionControlInfo
+> Task :capacitor-android:javaPreCompileRelease
+> Task :capacitor-haptics:javaPreCompileRelease
+> Task :capacitor-browser:javaPreCompileRelease
+> Task :capacitor-splash-screen:generateReleaseRFile
+> Task :app:mergeReleaseResources
+
+> Task :capacitor-android:compileReleaseJavaWithJavac
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=C:/Progetti/AndroidTools/tmp
+
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=C:/Progetti/AndroidTools/tmp
+
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=C:/Progetti/AndroidTools/tmp
+
+Note: C:\Progetti\ASHFALL\node_modules\@capacitor\android\capacitor\src\main\java\com\getcapacitor\Bridge.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :capacitor-splash-screen:javaPreCompileRelease
+> Task :capacitor-community-admob:javaPreCompileRelease
+> Task :capacitor-cordova-android-plugins:javaPreCompileRelease
+> Task :capacitor-android:bundleLibCompileToJarRelease
+> Task :capacitor-android:bundleLibRuntimeToJarRelease
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:processReleaseResources
+> Task :capacitor-haptics:compileReleaseJavaWithJavac
+> Task :capacitor-haptics:bundleLibRuntimeToJarRelease
+> Task :app:bundleReleaseResources
+> Task :capacitor-browser:compileReleaseJavaWithJavac
+> Task :capacitor-browser:bundleLibRuntimeToJarRelease
+> Task :capacitor-splash-screen:compileReleaseJavaWithJavac
+> Task :capacitor-splash-screen:bundleLibRuntimeToJarRelease
+> Task :capacitor-cordova-android-plugins:compileReleaseJavaWithJavac NO-SOURCE
+> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToJarRelease
+> Task :app:javaPreCompileRelease
+> Task :capacitor-cordova-android-plugins:bundleLibCompileToJarRelease
+> Task :capacitor-browser:bundleLibCompileToJarRelease
+> Task :capacitor-haptics:bundleLibCompileToJarRelease
+> Task :capacitor-splash-screen:bundleLibCompileToJarRelease
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mergeReleaseStartupProfile
+
+> Task :capacitor-community-admob:compileReleaseKotlin
+w: file:///C:/Progetti/ASHFALL/node_modules/@capacitor-community/admob/android/src/main/java/com/getcapacitor/community/admob/banner/BannerAdSizeEnum.kt:15:25 'SMART_BANNER: AdSize' is deprecated. Deprecated in Java
+w: file:///C:/Progetti/ASHFALL/node_modules/@capacitor-community/admob/android/src/main/java/com/getcapacitor/community/admob/banner/BannerAdSizeInfo.kt:16:78 Unnecessary non-null assertion (!!) on a non-null receiver of type AdSize?
+w: file:///C:/Progetti/ASHFALL/node_modules/@capacitor-community/admob/android/src/main/java/com/getcapacitor/community/admob/banner/BannerAdSizeInfo.kt:16:126 Unnecessary non-null assertion (!!) on a non-null receiver of type AdSize?
+w: file:///C:/Progetti/ASHFALL/node_modules/@capacitor-community/admob/android/src/main/java/com/getcapacitor/community/admob/rewardedinterstitial/RewardedInterstitialAdCallbackAndListeners.kt:27:108 Parameter 'adOptions' is never used
+
+> Task :capacitor-community-admob:compileReleaseJavaWithJavac
+Note: C:\Progetti\ASHFALL\node_modules\@capacitor-community\admob\android\src\main\java\com\getcapacitor\community\admob\banner\BannerExecutor.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:mergeReleaseShaders
+> Task :capacitor-community-admob:bundleLibCompileToJarRelease
+> Task :capacitor-community-admob:bundleLibRuntimeToJarRelease
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:dexBuilderRelease
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-android:mergeReleaseShaders
+> Task :capacitor-android:compileReleaseShaders NO-SOURCE
+> Task :capacitor-android:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-android:packageReleaseAssets
+> Task :capacitor-browser:mergeReleaseShaders
+> Task :capacitor-browser:compileReleaseShaders NO-SOURCE
+> Task :capacitor-browser:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-browser:packageReleaseAssets
+> Task :capacitor-community-admob:mergeReleaseShaders
+> Task :capacitor-community-admob:compileReleaseShaders NO-SOURCE
+> Task :capacitor-community-admob:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-community-admob:packageReleaseAssets
+> Task :capacitor-cordova-android-plugins:mergeReleaseShaders
+> Task :capacitor-cordova-android-plugins:compileReleaseShaders NO-SOURCE
+> Task :capacitor-cordova-android-plugins:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:packageReleaseAssets
+> Task :capacitor-haptics:mergeReleaseShaders
+> Task :capacitor-haptics:compileReleaseShaders NO-SOURCE
+> Task :capacitor-haptics:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-haptics:packageReleaseAssets
+> Task :capacitor-splash-screen:mergeReleaseShaders
+> Task :capacitor-splash-screen:compileReleaseShaders NO-SOURCE
+> Task :capacitor-splash-screen:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-splash-screen:packageReleaseAssets
+> Task :app:mergeExtDexRelease
+> Task :app:mergeReleaseAssets
+> Task :app:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-android:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-browser:processReleaseJavaRes NO-SOURCE
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :capacitor-community-admob:processReleaseJavaRes
+> Task :capacitor-cordova-android-plugins:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-haptics:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-splash-screen:processReleaseJavaRes NO-SOURCE
+> Task :app:mergeReleaseJniLibFolders
+> Task :capacitor-android:mergeReleaseJniLibFolders
+> Task :capacitor-android:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-android:copyReleaseJniLibsProjectOnly
+> Task :capacitor-browser:mergeReleaseJniLibFolders
+> Task :capacitor-browser:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-browser:copyReleaseJniLibsProjectOnly
+> Task :capacitor-community-admob:mergeReleaseJniLibFolders
+> Task :capacitor-community-admob:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-community-admob:copyReleaseJniLibsProjectOnly
+> Task :capacitor-cordova-android-plugins:mergeReleaseJniLibFolders
+> Task :capacitor-cordova-android-plugins:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-cordova-android-plugins:copyReleaseJniLibsProjectOnly
+> Task :capacitor-haptics:mergeReleaseJniLibFolders
+> Task :capacitor-haptics:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-haptics:copyReleaseJniLibsProjectOnly
+> Task :capacitor-splash-screen:mergeReleaseJniLibFolders
+> Task :capacitor-splash-screen:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-splash-screen:copyReleaseJniLibsProjectOnly
+> Task :app:writeReleaseAppMetadata
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-android:prepareReleaseArtProfile
+> Task :capacitor-browser:prepareReleaseArtProfile
+> Task :capacitor-community-admob:prepareReleaseArtProfile
+> Task :capacitor-cordova-android-plugins:prepareReleaseArtProfile
+> Task :capacitor-haptics:prepareReleaseArtProfile
+> Task :capacitor-splash-screen:prepareReleaseArtProfile
+> Task :app:mergeReleaseArtProfile
+> Task :app:collectReleaseDependencies
+> Task :app:configureReleaseDependencies
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:validateSigningRelease
+> Task :app:parseReleaseIntegrityConfig
+> Task :app:mergeDexRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:mergeReleaseJavaResource
+> Task :app:buildReleasePreBundle
+> Task :app:packageReleaseBundle
+> Task :app:signReleaseBundle
+> Task :app:produceReleaseBundleIdeListingFile
+> Task :app:createReleaseBundleListingFileRedirect
+> Task :app:bundleRelease
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.9/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 3m 8s
+150 actionable tasks: 150 executed
