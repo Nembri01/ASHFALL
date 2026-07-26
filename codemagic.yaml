@@ -33,7 +33,11 @@ workflows:
         script: npm ci || npm install
 
       - name: Costruisci www/ e sincronizza Capacitor
-        script: npm run cap:sync
+        # Solo la piattaforma iOS: sul runner macOS non c'e' l'SDK Android e
+        # "cap sync" senza argomenti proverebbe a sincronizzare anche quella.
+        script: |
+          node tools/build_www.mjs
+          npx cap sync ios
 
       - name: pod install
         script: |
