@@ -828,14 +828,18 @@ const EVENTS = [
   { id:'medic', name:'POSTO DI MEDICAZIONE', ico:'➕', take:'CURATI', skip:null, autoGood:true,
     desc:'Cura completa + 1.5 HP/s di rigenerazione per il resto della partita.',
     apply(p){ p.hp=p.maxHp; p.regen+=1.5; } },
-  { id:'gamble', name:'SCOMMESSA', ico:'🎲', take:'PUNTA (25 ⬢)', skip:'NON RISCHIARE',
-    desc:'Punta 25 rottami: 60% di vincere +50% danno permanente, 40% di perderli e basta.',
+  // Rischio/ricompensa con la valuta di gioco, NON una scommessa: niente puntata,
+  // niente vincita, niente cornice da casino'. Apple non pubblica app dichiarate
+  // "gioco d'azzardo simulato" da account individuali, e la vecchia versione
+  // (SCOMMESSA / PUNTA / VINTO-PERSO) ci ha fatto respingere la 1.0.
+  { id:'serum', name:'SIERO SPERIMENTALE', ico:'🧪', take:'INIETTA (25 ⬢)', skip:'NON RISCHIARE',
+    desc:'Sintetizza un siero con 25 rottami: 60% riesce e dà +50% danno permanente, 40% si degrada.',
     can(){ return G.scrap>=25; },
     apply(p){ G.scrap-=25;
-      if(U.chance(0.6)){ p.damage*=1.5; banner('VINTO','+50% danno'); Audio2.levelup(); }
-      else { banner('PERSO','rottami svaniti'); Audio2.hurt(); } } },
-  { id:'swap', name:'ARMERIA ABBANDONATA', ico:'🎰', take:'IMBRACCIA', skip:'TIENI LA TUA',
-    desc:'Sostituisci l’arma con una a caso (con la sua maestria) per il resto della partita. Azzardo puro.',
+      if(U.chance(0.6)){ p.damage*=1.5; banner('RIUSCITO','+50% danno'); Audio2.levelup(); }
+      else { banner('DEGRADATO','siero inerte'); Audio2.hurt(); } } },
+  { id:'swap', name:'ARMERIA ABBANDONATA', ico:'🔀', take:'IMBRACCIA', skip:'TIENI LA TUA',
+    desc:'Sostituisci l’arma con una a caso (con la sua maestria) per il resto della partita. Rischio puro.',
     apply(p){ const cur=p.weapon&&p.weapon.id; const pool=WEAPONS.filter(w=>w.id!==cur);
       const nw=U.pick(pool); const lv=(typeof masteryLevel==='function')?masteryLevel(nw.id):0;
       const wc=Object.assign({},nw); p.weapon=wc; p.evo=null; p.masteryLv=lv;
@@ -1297,9 +1301,9 @@ const EN_EVENT={
   cache:{name:'TREASURE ROOM',desc:'+30 scrap and a 40% heal.',take:'COLLECT'},
   forge:{name:'FORGE',desc:'+18% permanent fire rate this run.',take:'UPGRADE',skip:'NO THANKS'},
   medic:{name:'MEDIC STATION',desc:'Full heal + 1.5 HP/s regen for the rest of the run.',take:'HEAL'},
-  gamble:{name:'GAMBLE',desc:'Bet 25 scrap: 60% to win +50% permanent damage, 40% to just lose them.',take:'BET (25 ⬢)',skip:'DO NOT RISK'},
-  swap:{name:'ABANDONED ARMORY',desc:'Swap your weapon for a random one (with its mastery) for the rest of the run. Pure gamble.',take:'TAKE IT',skip:'KEEP YOURS'},
-  cursed:{name:'CURSED BLESSING',desc:'+40% rate and +20% speed, but -20% max HP. The gamble of the desperate.',take:'ACCEPT THE PACT',skip:'REFUSE'},
+  serum:{name:'EXPERIMENTAL SERUM',desc:'Synthesize a serum with 25 scrap: 60% it works for +50% permanent damage, 40% it degrades.',take:'INJECT (25 ⬢)',skip:'DO NOT RISK'},
+  swap:{name:'ABANDONED ARMORY',desc:'Swap your weapon for a random one (with its mastery) for the rest of the run. Pure risk.',take:'TAKE IT',skip:'KEEP YOURS'},
+  cursed:{name:'CURSED BLESSING',desc:'+40% rate and +20% speed, but -20% max HP. The risk of the desperate.',take:'ACCEPT THE PACT',skip:'REFUSE'},
   altar:{name:'RELIC ALTAR',desc:'A forgotten altar. Offer 60 scrap for a relic... if relics exist.',take:'OFFER (60 ⬢)',skip:'IGNORE'},
   recycler:{name:'RECYCLER',desc:'Convert 30 scrap into +20% permanent movement speed.',take:'CONVERT (30 ⬢)',skip:'NO'},
   oracle:{name:'ORACLE',desc:'+15% crit and +12% bullet speed for the rest of the run.',take:'LISTEN',skip:'IGNORE'},
@@ -4810,8 +4814,8 @@ function nextUnlockHint(){
   return best;
 }
 const BANNER_EN={
-  'reliquia':'relic', 'VINTO':'WON', 'PERSO':'LOST', '+50% danno':'+50% damage',
-  'rottami svaniti':'scrap gone', 'nuova arma':'new weapon', 'RELIQUIA':'RELIC', 'ottenuta':'obtained',
+  'reliquia':'relic', 'RIUSCITO':'SUCCESS', 'DEGRADATO':'DEGRADED', '+50% danno':'+50% damage',
+  'siero inerte':'inert serum', 'nuova arma':'new weapon', 'RELIQUIA':'RELIC', 'ottenuta':'obtained',
   'ECO DI POTERE':'ECHO OF POWER', '+danno +HP':'+damage +HP', 'MINACCIA SBLOCCATA':'THREAT UNLOCKED',
   'CODEX':'CODEX', 'nuova voce':'new entry', 'IMPRESA':'ACHIEVEMENT', 'ACQUISTATO':'PURCHASED',
   'RELIQUIA SBLOCCATA':'RELIC UNLOCKED', 'SBLOCCATO':'UNLOCKED', 'ARMA EVOLUTA!':'WEAPON EVOLVED!',
